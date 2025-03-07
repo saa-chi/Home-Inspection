@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Property Inspection Report Generator</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='/styles.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo-container">
+                <img src="attached_assets/NIE_University.png" alt="NIE University Logo" class="logo">
+                <img src="attached_assets/PULSE LOGO.png" alt="PULSE Logo" class="logo">
+                <img src="attached_assets/IVIS_logo.png" alt="IVIS LABS Logo" class="logo">
+            </div>
+            <h1><b>PropInsight</b> <i style="font-size: large;">- Smart Reports. Smarter Decisions</i></h1>
+            <p>An AI-powered property inspection report generator based on property type and observed issues</p>
+        </header>
+
+        <div class="form-container">
+            <form id="inspectionForm">
+                <!-- Dropdown for Property Type -->
+                <div class="form-group">
+                    <label for="niche">Property Type:</label>
+                    <select id="nicheDropdown">
+                        <option value="">Select Property Type</option>
+                        <option value="residential">Residential</option>
+                        <option value="commercial">Commercial</option>
+                        <option value="industrial">Industrial</option>
+                        <option value="real estate">Real Estate</option>
+                        <option value="rental">Rental</option>
+                        <option value="building inspection">Building Inspection</option>
+                        <option value="vacant land">Vacant land</option>
+                        <option value="mixed-use">Mixed-use</option>
+                        <option value="hospitality">Hospitality</option>
+                        <option value="agricultural">Agricultural</option>
+
+
+
+                        <!-- <option value="other">Other (Specify Below)</option> -->
+                    </select>
+                    <input type="text" id="nicheInput" name="niche" placeholder="Enter Property Type" style="display: none;">
+                </div>
+
+                <!-- Property Age Dropdown -->
+                <div class="form-group">
+                    <label for="property_age">Property Age:</label>
+                    <select id="property_age" name="property_age">
+                        <option value="0-5 years">0-5 years</option>
+                        <option value="5-10 years">5-10 years</option>
+                        <option value="10-15 years">10-15 years</option>
+                        <option value="15-20 years">15-20 years</option>
+                        <option value="20+ years">20+ years</option>
+                    </select>
+                </div>
+
+                <!-- Past Renovations Dropdown -->
+                <div class="form-group">
+                    <label for="past_renovations">Past Renovations:</label>
+                    <select id="past_renovations" name="past_renovations">
+                        <option value="Yes">Yes</option>
+                        <option value="No">No</option>
+                    </select>
+                </div>
+
+                <!-- Known Issues Multi-Select Dropdown -->
+                <div class="form-group">
+                    <label>Known Issues:</label>
+                    <div id="known_issues_container">
+                        <label><input type="checkbox" name="known_issues" value="Water Leakage"> Water Leakage</label>
+                        <label><input type="checkbox" name="known_issues" value="Structural Cracks"> Structural Cracks</label>
+                        <label><input type="checkbox" name="known_issues" value="Electrical Issues"> Electrical Issues</label>
+                        <label><input type="checkbox" name="known_issues" value="Plumbing Problems"> Plumbing Problems</label>
+                        <label><input type="checkbox" name="known_issues" value="Pest Infestation"> Pest Infestation</label>
+                        <label><input type="checkbox" name="known_issues" value="Roof Damage"> Roof Damage</label>
+                        <label><input type="checkbox" name="known_issues" value="None"> None</label>
+                        <!-- <label><input type="checkbox" id="other_issue_checkbox" value="other"> Other (Specify Below)</label> -->
+                        <input type="text" id="known_issues_input" name="known_issues_custom" placeholder="Enter Issue" style="display: none;">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="num_ideas">Number of Inspection Areas:</label>
+                    <select id="num_ideas" name="num_ideas">
+                        <option value="1">1</option>
+                        <option value="3" selected>3</option>
+                        <option value="5">5</option>
+                        <option value="10">10</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="tone">Report Tone:</label>
+                    <select id="tone" name="tone">
+                        <option value="professional" selected>Professional</option>
+                        <option value="detailed">Detailed</option>
+                        <option value="concise">Concise</option>
+                    </select>
+                </div>
+
+                <div class="form-group checkbox">
+                    <input type="checkbox" id="include_outline" name="include_outline" checked>
+                    <label for="include_outline">Include Detailed Observations</label>
+                </div>
+
+                <div class="form-group">
+                    <label for="model">LLM Model:</label>
+                    <select id="model" name="model">
+                        <option value="mistral" selected>mistral</option>
+                        <option value="granite3-dense">granite3-dense</option>
+                        <option value="gemma2-2b">gemma2:2b</option>
+                        <option value="qwen2.5-0.5b">qwen2.5:0.5b</option>
+                        <option value="deepseek-r1-1.5b">deepseek-r1:1.5b</option>
+                        <option value="deepseek-coder">deepseek-coder</option>
+                    </select>
+                </div>
+
+                <button type="submit" id="generateBtn">Generate Report</button>
+            </form>
+        </div>
+
+        <div class="results-container" id="resultsContainer" style="display: none;">
+            <h2>Your Inspection Report</h2>
+            <div id="loading" style="display: none;">
+                <div class="spinner"></div>
+                <p>Generating report...</p>
+            </div>
+            <div id="results"></div>
+            <div class="button-container">
+                <button id="copyBtn">Copy to Clipboard</button>
+                <button id="savePdfBtn">Save as PDF</button>
+            </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const response = await fetch('/models');
+                const data = await response.json();
+                const modelSelect = document.getElementById('model');
+                modelSelect.innerHTML = '';
+
+                if (data.models && data.models.length > 0) {
+                    data.models.forEach(model => {
+                        const option = document.createElement('option');
+                        option.value = model;
+                        option.textContent = model;
+                        modelSelect.appendChild(option);
+                    });
+                } else {
+                    modelSelect.innerHTML = `
+                        <option value="mistral" selected>mistral</option>
+                        <option value="granite3-dense">granite3-dense</option>
+                        <option value="gemma2-2b">gemma2:2b</option>
+                        <option value="qwen2.5-0.5b">qwen2.5:0.5b</option>
+                        <option value="deepseek-r1-1.5b">deepseek-r1:1.5b</option>
+                        <option value="deepseek-coder">deepseek-coder</option>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error fetching models:', error);
+            }
+        });
+
+        // Handle Property Type Selection
+        document.getElementById('nicheDropdown').addEventListener('change', function () {
+            const nicheInput = document.getElementById('nicheInput');
+            if (this.value === 'other') {
+                nicheInput.style.display = 'block';
+                nicheInput.value = ''; // Clear input
+            } else {
+                nicheInput.style.display = 'none';
+                nicheInput.value = this.value;
+            }
+        });
+        
+        // Error in console was related to a non-existent element with ID 'other_issue_checkbox'
+        // This has been removed as it's causing errors and doesn't exist in the HTML
+
+        document.getElementById('inspectionForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = new FormData(e.target);
+            const selectedNiche = document.getElementById("nicheDropdown").value;
+            const manualNiche = document.getElementById("nicheInput").value.trim();
+
+            // Validate property type selection
+            if (!selectedNiche) {
+                alert("Please select a property type.");
+                return;
+            }
+
+            // Get selected issues
+            const selectedIssues = [];
+            document.querySelectorAll('input[name="known_issues"]:checked').forEach(checkbox => {
+                selectedIssues.push(checkbox.value);
+            });
+            
+            // Clear previous issues and add selected ones
+            formData.delete("known_issues");
+            selectedIssues.forEach(issue => {
+                formData.append("known_issues", issue);
+            });
+
+            formData.set("niche", selectedNiche === "other" ? manualNiche : selectedNiche);
+            formData.set("include_outline", document.getElementById("include_outline").checked ? "true" : "false");
+
+            const resultsContainer = document.getElementById('resultsContainer');
+            const loading = document.getElementById('loading');
+            const results = document.getElementById('results');
+
+            resultsContainer.style.display = 'block';
+            loading.style.display = 'block';
+            results.innerHTML = '';
+
+            try {
+                // Convert FormData to a plain object for inspection
+                const formDataObj = {};
+                for (let [key, value] of formData.entries()) {
+                    if (formDataObj[key]) {
+                        if (!Array.isArray(formDataObj[key])) {
+                            formDataObj[key] = [formDataObj[key]];
+                        }
+                        formDataObj[key].push(value);
+                    } else {
+                        formDataObj[key] = value;
+                    }
+                }
+                
+                console.log("Submitting form data:", formDataObj);
+                
+                const response = await fetch('/generate', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                // First try to get the response as JSON
+                let data;
+                const contentType = response.headers.get("content-type");
+                if (contentType && contentType.includes("application/json")) {
+                    data = await response.json();
+                } else {
+                    // If not JSON, get as text
+                    const text = await response.text();
+                    data = { error: text || "Unknown error occurred", generated_ideas: "" };
+                }
+
+                if (!response.ok) {
+                    throw new Error(data.error || Server error: ${response.status});
+                }
+
+                if (data.generated_ideas) {
+                    results.innerHTML = formatResponseWithMarkdown(data.generated_ideas);
+                } else {
+                    throw new Error("No content returned from server");
+                }
+            } catch (error) {
+                console.error("Report generation error:", error);
+                results.innerHTML = <div class="error">Error: ${error.message}</div>;
+            } finally {
+                loading.style.display = 'none';
+            }
+        });
+
+        // Event listener for the copy button
+        document.getElementById('copyBtn').addEventListener('click', () => {
+            const results = document.getElementById('results').innerText;
+            navigator.clipboard.writeText(results)
+                .then(() => {
+                    const copyBtn = document.getElementById('copyBtn');
+                    copyBtn.textContent = 'Copied!';
+                    setTimeout(() => {
+                        copyBtn.textContent = 'Copy to Clipboard';
+                    }, 2000);
+                })
+                .catch(err => {
+                    console.error('Failed to copy: ', err);
+                });
+        });
+
+        // PDF Generation functionality
+        document.getElementById('savePdfBtn').addEventListener('click', function() {
+            console.log("PDF Download Button Clicked");
+            
+            try {
+                const { jsPDF } = window.jspdf;
+                const resultsElement = document.getElementById('results');
+                
+                if (!resultsElement || resultsElement.innerHTML.trim() === "") {
+                    alert("No report content to save!");
+                    return;
+                }
+                
+                // Create a temporary container with better styling for PDF
+                const tempContainer = document.createElement('div');
+                
+                // Sanitize the content to handle special characters
+                let sanitizedContent = resultsElement.innerHTML
+                    .replace(/\+/g, '&#43;')  // Replace + with HTML entity
+                    .replace(/-/g, '&#45;')   // Replace - with HTML entity
+                    .replace(/=/g, '&#61;');  // Replace = with HTML entity
+                
+                tempContainer.innerHTML = `
+                    <h1 style="text-align: center; margin-bottom: 20px;">Property Inspection Report</h1>
+                    <div style="padding: 20px; font-family: Arial, sans-serif;">${sanitizedContent}</div>
+                `;
+                tempContainer.style.width = '210mm';
+                tempContainer.style.background = 'white';
+                tempContainer.style.padding = '20px';
+                tempContainer.style.position = 'absolute';
+                tempContainer.style.left = '-9999px';
+                document.body.appendChild(tempContainer);
+                
+                // Create PDF with html2canvas
+                html2canvas(tempContainer, {
+                    scale: 2, // Higher quality
+                    useCORS: true,
+                    logging: true,
+                    backgroundColor: '#ffffff',
+                    allowTaint: true,
+                    letterRendering: true
+                }).then(function(canvas) {
+                    document.body.removeChild(tempContainer);
+                    
+                    const imgData = canvas.toDataURL('image/png');
+                    const pdf = new jsPDF('p', 'mm', 'a4');
+                    const imgWidth = 210; // A4 width in mm
+                    const pageHeight = 297; // A4 height in mm
+                    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                    
+                    let heightLeft = imgHeight;
+                    let position = 0;
+                    let pageNumber = 1;
+                    
+                    // Add first page
+                    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                    heightLeft -= pageHeight;
+                    
+                    // Add additional pages if needed
+                    while (heightLeft > 0) {
+                        position = -pageHeight * pageNumber;
+                        pdf.addPage();
+                        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                        heightLeft -= pageHeight;
+                        pageNumber++;
+                    }
+                    
+                    pdf.save("Property_Inspection_Report.pdf");
+                }).catch(function(error) {
+                    console.error("Canvas conversion error:", error);
+                    alert("Error creating PDF: " + error.message);
+                });
+            } catch (error) {
+                console.error("PDF Generation Failed:", error);
+                alert("Something went wrong while generating PDF: " + error.message);
+            }
+        });
+
+
+
+
+
+
+        function formatResponseWithMarkdown(text) {
+            if (!text || text.trim() === "") {
+                return "<div class='error'>No content generated.</div>";
+            }
+
+            // First, escape any special HTML characters to prevent issues
+            let formatted = text
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;')
+                .replace(/\r?\n/g, '<br>')  // Ensure all new lines are replaced
+                .replace(/#+\s?(.*?)(?:<br>|$)/g, '<h3>$1</h3>')  // Markdown headers
+                .replace(/(\d+\.\s+)(.*?)(?:<br>|$)/g, '<div class="list-item">$1$2</div>')  // Ordered lists
+                .replace(/\\(.?)\\*/g, '<strong>$1</strong>')  // Bold text
+                .replace(/\(.?)\*/g, '<em>$1</em>');  // Italics
+                
+            // After all replacements are done, we can safely convert back special characters for display
+            formatted = formatted
+                .replace(/&lt;\+&gt;/g, '+')
+                .replace(/&lt;-&gt;/g, '-')
+                .replace(/&lt;=&gt;/g, '=');
+
+            return formatted.includes('<br>') ? formatted : <div class='error'>Invalid content format.</div>;
+        }
+
+    </script>
+</body>
+</html>

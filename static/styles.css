@@ -1,0 +1,310 @@
+.logo-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Ensures logos are evenly spaced */
+    width: 100%;
+    padding: 10px 20px;
+    background-color: #173A8F; /* Adjust as per your theme */
+    border-radius: 8px;
+}
+
+.logo-item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex: 1; /* Equal spacing for all logos */
+}
+
+.logo {
+    height: 150px; /* Increased size */
+    max-width: 200px; /* Increased width */
+    object-fit: contain;
+}
+
+/* Specific adjustments */
+.left {
+    justify-content: flex-start; /* Align left logo to the start */
+}
+
+.center {
+    justify-content: center; /* Center logo in the middle */
+}
+
+.right {
+    justify-content: flex-end; /* Align right logo to the end */
+}
+
+
+
+
+
+
+
+
+
+:root {
+    --primary-color: #1e3a8a;
+    --secondary-color: #2563eb;
+    --accent-color: #ef4444;
+    --background-color: #f9fafb;
+    --text-color: #333;
+    --light-gray: #e5e7eb;
+    --border-radius: 10px;
+    --box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.header {
+    text-align: center;
+    padding: 10px;
+}
+
+
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    background: linear-gradient(to right, #dbeafe, #f9fafb);
+    color: var(--text-color);
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 850px;
+    width: 100%;
+    background: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    overflow: hidden;
+}
+
+header {
+    background: var(--primary-color);
+    color: white;
+    padding: 40px;
+    text-align: center;
+    border-bottom: 5px solid var(--secondary-color);
+}
+
+header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+}
+
+.form-container {
+    padding: 30px;
+    background: var(--light-gray);
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+input[type="text"],
+select {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid var(--light-gray);
+    border-radius: var(--border-radius);
+    font-size: 16px;
+    transition: 0.3s;
+}
+
+input[type="text"]:focus,
+select:focus {
+    outline: none;
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 5px rgba(37, 99, 235, 0.5);
+}
+
+.checkbox {
+    display: flex;
+    align-items: center;
+}
+
+.checkbox input {
+    margin-right: 10px;
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    padding: 10px;
+}
+
+button {
+    background: var(--secondary-color);
+    color: white;
+    border: none;
+    padding: 12px 18px;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    transition: all 0.3s;
+    width: 100%;
+}
+
+button:hover {
+    background: #1e40af;
+}
+
+.results-container {
+    padding: 30px;
+    background: white;
+    border-top: 2px solid var(--light-gray);
+}
+
+.results-container h2 {
+    margin-bottom: 20px;
+    color: var(--primary-color);
+    border-bottom: 3px solid var(--light-gray);
+    padding-bottom: 10px;
+}
+
+#results {
+    background: var(--light-gray);
+    padding: 20px;
+    border-radius: var(--border-radius);
+    margin-bottom: 20px;
+    white-space: pre-wrap;
+    min-height: 200px;
+    line-height: 1.8;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
+}
+
+#results h3 {
+    color: var(--secondary-color);
+    margin: 15px 0 10px;
+}
+
+#results .list-item {
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+}
+
+#results .list-number {
+    color: var(--secondary-color);
+    font-weight: bold;
+    margin-right: 10px;
+    min-width: 25px;
+}
+
+.spinner {
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border-left-color: var(--secondary-color);
+    animation: spin 1s linear infinite;
+    margin: 20px auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+#loading {
+    text-align: center;
+    color: var(--primary-color);
+}
+
+.error {
+    color: var(--accent-color);
+    font-weight: bold;
+}
+
+#copyBtn {
+    margin-top: 10px;
+    background: var(--primary-color);
+}
+
+#savePdfBtn {
+    margin-top: 10px;
+    background: var(--primary-color);
+}
+
+#copyBtn:hover {
+    background: #172554;
+}
+
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+    
+    header {
+        padding: 30px;
+    }
+    
+    .form-container,
+    .results-container {
+        padding: 20px;
+    }
+    
+    input[type="text"],
+    select,
+    button {
+        padding: 12px;
+    }
+}
+
+.list-item {
+    border-bottom: 1px dotted black; /* If this exists, try removing it */
+}
+h3 {
+    border-bottom: 1px dotted black; /* Try removing */
+}
+
+/* Ensure checkboxes appear properly */
+input[type="checkbox"] {
+    appearance: auto; /* Resets any unwanted styles */
+    width: 16px;
+    height: 16px;
+    margin-right: 5px;
+}
+
+/* Style for better visibility */
+#known_issues_container label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 5px;
+}
+
+/* Ensure text input appears normally */
+#known_issues_input {
+    display: none;
+    margin-top: 5px;
+    padding: 5px;
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.button-container {
+    display: flex;
+    justify-content: center;
+    gap: 10px; /* Space between buttons */
+    margin-top: 10px;
+} 
+
+
+
+
+
